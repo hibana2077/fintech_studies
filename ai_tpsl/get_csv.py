@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2023-06-25 20:38:59
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-06-28 10:51:17
+LastEditTime: 2023-06-28 14:09:55
 FilePath: \fintech_studies\ai_tpsl\get_csv.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -82,6 +82,7 @@ print()
 print(df.head())
 print()
 
+filename = "".join(re.sub(r'[/:]', '_', symbol).split('_')[:-1]) + '_' + timeframe + '.csv'
 logging.info(log_loding_format.format(' Save to csv '))
-df.to_csv(re.sub(r'[/:]', '_', symbol) + '_' + timeframe + '.csv') 
-logging.info(log_success_format.format(' Save to csv success , file name: ' + f'{symbol.replace("/", "_")}_{timeframe}.csv'))
+df.to_csv(filename) 
+logging.info(log_success_format.format(' Save to csv success , file name: ' + filename))
