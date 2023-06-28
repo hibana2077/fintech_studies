@@ -2,12 +2,13 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2023-06-25 20:38:59
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-06-28 14:09:55
+LastEditTime: 2023-06-28 15:06:52
 FilePath: \fintech_studies\ai_tpsl\get_csv.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
 import ccxt
 import re
+import time
 import logging
 import pandas as pd
 import datetime as dt
@@ -56,7 +57,7 @@ if symbol not in mexc.symbols:
 logging.info(log_success_format.format(' Check params success '))
 
 logging.info(log_loding_format.format(' Get ohlcv '))
-timer_st = dt.datetime.now()
+timer_st = time.time()
 starttime = dt.datetime.strptime(start_time, '%Y-%m-%d %H:%M:%S')
 endtime = dt.datetime.strptime(end_time, '%Y-%m-%d %H:%M:%S')
 temp_data = []
@@ -68,10 +69,11 @@ while True:
     starttime = dt.datetime.fromtimestamp(ohlcv[-1][0] / 1000)
     if starttime > endtime:
         break
-logging.info(log_success_format.format(' Get ohlcv success , cost time: ' + str(dt.datetime.now() - timer_st)))
+logging.info(log_success_format.format(' Get ohlcv success , cost time: ' + str(time.time() - timer_st)))
 
 logging.info(log_loding_format.format(' Convert to dataframe '))
 df = pd.DataFrame(temp_data, columns=['date', 'open', 'high', 'low', 'close', 'volume'])
+df = df.drop_duplicates()
 df['date'] = pd.to_datetime(df['date'], unit='ms')
 df['date'] = df['date'].dt.strftime('%Y-%m-%d %H:%M:%S')
 df.set_index('date', inplace=True)

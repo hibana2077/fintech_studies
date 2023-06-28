@@ -1,8 +1,7 @@
 import pandas as pd
-import numpy as np
 import pandas_ta as ta
-import matplotlib.pyplot as plt
 import logging
+import re
 import os
 import argparse
 
@@ -49,8 +48,21 @@ df.ta.macd(close='close', append=True)
 df.ta.vp(close='close', append=True)
 logging.info(log_success_format.format(' Add Technical Analysis success '))
 
+#drop low_close,mean_close,high_close,pos_volume,neg_volume,total_volume and nan
+logging.info(log_loding_format.format(' Drop other columns and nan '))
+df = df.drop(['low_close', 'mean_close', 'high_close', 'pos_volume', 'neg_volume', 'total_volume'], axis=1)
+df = df.dropna()
+logging.info(log_success_format.format(' Drop other columns and nan success '))
+
+#data info
+logging.info(log_format.format(' Data Info '))
+logging.info('Data Shape: ' + log_content_format.format(str(df.shape)))
+logging.info('Data Head: \n' + log_content_format.format(str(df.head())))
+logging.info('Data Tail: \n' + log_content_format.format(str(df.tail())))
+logging.info(log_format.format(' End of Data Info '))
+
 #save csv
-input_file = input_file.split('.')[0]
+input_file = input_file.split('.')[0] if not input_file.startswith('./') else input_file[2:].split('.')[0]
 logging.info(log_loding_format.format(' Save csv '))
 df.to_csv(input_file+"_ta.csv", index=False)
 logging.info(log_success_format.format(' Save csv success , file name: '+input_file+"_ta.csv"))
