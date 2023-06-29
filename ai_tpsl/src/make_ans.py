@@ -121,12 +121,7 @@ def calculate_liquidation_price(open_price, quantity, face_value, leverage,mma=0
     return long_liquidation_price, short_liquidation_price
 
 logging.info(log_loding_format.format(' Make label '))
-temp_df = pd.DataFrame()
-temp_df['date'] = df['date']
-temp_df['open'] = df['open']
-temp_df['high'] = df['high']
-temp_df['low'] = df['low']
-temp_df['close'] = df['close']
+temp_df = df.copy()
 df_len = len(df)
 for kline in range(df_len):
     #calculate liquidation price
@@ -178,5 +173,5 @@ logging.info(log_format.format(' End of Data Info '))
 #save csv
 output_file = input_file.split('.')[0] if not input_file.startswith('./') else input_file[2:].split('.')[0]
 logging.info(log_loding_format.format(' Save csv '))
-df.to_csv(output_file + '_label.csv', index=False)
+temp_df.to_csv(output_file + '_label.csv', index=False)
 logging.info(log_success_format.format(' Save csv success '))

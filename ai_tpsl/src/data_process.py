@@ -44,8 +44,12 @@ df.ta.ema(close='close', length=50, append=True)
 df.ta.ema(close='close', length=100, append=True)
 df.ta.ema(close='close', length=200, append=True)
 df.ta.rsi(close='close', length=14, append=True)
-df.ta.macd(close='close', append=True)
 df.ta.vp(close='close', append=True)
+df.ta.fisher(close='close', length=9, append=True)
+df.ta.entropy(close='close', length=14, append=True)
+df.ta.kurtosis(close='close', length=14, append=True)
+df.ta.mad(close='close', length=14, append=True)
+df.ta.zscore(close='close', length=14, append=True)
 logging.info(log_success_format.format(' Add Technical Analysis success '))
 
 #drop low_close,mean_close,high_close,pos_volume,neg_volume,total_volume and nan
