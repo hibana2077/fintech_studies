@@ -136,8 +136,8 @@ for kline in range(df_len):
     #rec best TP and SL
     #rec_list -> (temp_high, temp_low)
     rec_list = list()
-    temp_high = df.iloc[kline]['high']
-    temp_low = df.iloc[kline]['low']
+    temp_high = df.iloc[kline]['high']+1e-10
+    temp_low = df.iloc[kline]['low']+1e-10
     rec_list.append((temp_high, temp_low))
     for i in range(kline, liquidation_point):
         need_update = False
@@ -152,7 +152,8 @@ for kline in range(df_len):
     #formula score = TP_percent / SL_percent (the bigger the better)
     #formula TP1,TP2,TP3 = TP_percent/3,TP_percent/2,TP_percent
     # print(f"idx: {kline} , rec_list: {rec_list} , liquidation_price: {liquidation_price} , df.iloc[kline]['open']: {df.iloc[kline]['open']}")
-    best_TP , best_SL = sorted(rec_list, key=lambda x: (x[0] - df.iloc[kline]['open']) / df.iloc[kline]['open'] / (df.iloc[kline]['open'] - x[1]) / df.iloc[kline]['open'], reverse=True)[0]
+    # print(f"idx: {kline}")
+    best_TP , best_SL = sorted(rec_list, key=lambda x: ((x[0] - df.iloc[kline]['open'])+1e-10) / df.iloc[kline]['open'] / ((df.iloc[kline]['open'] - x[1])+1e-10) / df.iloc[kline]['open'], reverse=True)[0]
     # print(f"best_TP: {best_TP} , best_SL: {best_SL}")
     #rec label
     temp_df.loc[kline, 'TP1'] = (best_TP - df.iloc[kline]['open']) / df.iloc[kline]['open'] / 3
