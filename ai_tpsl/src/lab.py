@@ -44,5 +44,13 @@ def liquidation_price(open_price, quantity, face_value, leverage)->tuple:
 
     return long_liquidation_price, short_liquidation_price
 
-print(liquidation_price(8000, 10000, 0.0001, 25))#(7712.0, 8288.0)
-print(liquidation_price(80, 10, 1, 25))#(77.12, 82.88)
+# print(liquidation_price(8000, 10000, 0.0001, 25))#(7712.0, 8288.0)
+# print(liquidation_price(80, 10, 1, 25))#(77.12, 82.88)
+import tensorflow as tf
+
+if tf.config.list_physical_devices('GPU'):
+    print('Running on GPU')
+    print('GPU:', tf.config.list_physical_devices('GPU'))
+else:
+    print('Running on CPU')
+

@@ -29,6 +29,23 @@ parser.add_argument('-w', '--window', type=int, help='window size', required=Tru
 parser.add_argument('-ep', '--earlystop-patience', type=int, help='earlystop patience', required=True)
 parser.add_argument('-ev', '--earlystop-verbose', type=int, help='earlystop verbose', required=True)
 
+#train gpu cpu setting
+logging.info(log_loding_format.format(' Train GPU CPU Setting '))
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    try:
+        tf.config.experimental.set_visible_devices(gpus[0], 'GPU')
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        logging.error(e)
+        exit(1)
+else:
+    logging.info('No GPU')
+logging.info(log_success_format.format(' End of Train GPU CPU Setting '))
+logging.info(log_format.format(' Train GPU CPU Setting '))
+logging.info(log_content_format.format('GPU: ' + str(gpus)))
+logging.info(log_success_format.format(' End of Train GPU CPU Setting '))
+
 #input info
 args = parser.parse_args()
 input_file:str = args.input

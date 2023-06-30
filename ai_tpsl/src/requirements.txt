@@ -1,6 +1,7 @@
 tensorflow
 scikit-learn
 pandas
+pandas-ta
 numpy
 plotly
 ccxt
