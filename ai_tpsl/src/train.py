@@ -158,6 +158,8 @@ logging.info(log_format.format(' End of Train Model '))
 #save model
 logging.info(log_format.format(' Save Model '))
 logging.info('Saving model')
+#save model to file
+model_name = model_name + '.h5' if not model_name.endswith('.h5') else model_name
 model.save(model_name)
 logging.info(log_format.format(' End of Save Model '))
 
