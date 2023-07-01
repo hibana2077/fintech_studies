@@ -145,7 +145,7 @@ for kline in range(df_len):
         if df.iloc[i]['low'] < temp_low:temp_low,need_update = df.iloc[i]['low'],True
         if need_update:rec_list.append((temp_high, temp_low))
         #print progress
-        if i % 1000 == 0:print('inner progress: ' + str(i) + '/' + str(df_len))
+        #if i % 1000 == 0:print('inner progress: ' + str(i) + '/' + str(df_len))
     #calculate best TP and SL
     #formula TP_percent = (TP_price - entry_price) / entry_price
     #formula SL_percent = (entry_price - SL_price) / entry_price

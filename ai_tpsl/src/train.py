@@ -146,10 +146,12 @@ logging.info(log_format.format(' Build Model '))
 logging.info('Building model')
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout, GRU, BatchNormalization
-from keras.optimizers import Adam
+from keras.optimizers import RMSprop
 from keras.callbacks import EarlyStopping
 model = Sequential()
 model.add(BatchNormalization(input_shape=(X_train.shape[1], X_train.shape[2])))
+model.add(GRU(64, return_sequences=True))
+model.add(Dropout(0.2))
 model.add(GRU(128, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(GRU(64, return_sequences=True))
@@ -157,11 +159,14 @@ model.add(Dropout(0.2))
 model.add(BatchNormalization())
 model.add(LSTM(64, return_sequences=True))
 model.add(Dropout(0.2))
-model.add(LSTM(32, return_sequences=False))
+model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.2))
+model.add(LSTM(64, return_sequences=False))
+model.add(Dropout(0.2))
+model.add(Dense(8))
 model.add(Dense(4))
 
-model.compile(optimizer=Adam(learning_rate=learning_rate), loss='mse')
+model.compile(optimizer=RMSprop(learning_rate=learning_rate), loss='huber', metrics=['mape'])
 model.summary()
 logging.info(log_format.format(' End of Build Model '))
 
@@ -185,6 +190,14 @@ logging.info(log_format.format(' Evaluate Model '))
 logging.info('Evaluating model')
 score = model.evaluate(X_test, y_test, batch_size=batch_size)
 logging.info('Test loss: ' + log_content_format.format(str(score)))
+logging.info('X_test [0]: ' + log_content_format.format(str(X_test[0])))
+logging.info('y_test [0]: ' + log_content_format.format(str(y_test[0])))
+pred = model.predict(X_test)
+logging.info('pred [0]: ' + log_content_format.format(str(pred[0])))
+logging.info('X_train [0]: ' + log_content_format.format(str(X_train[0])))
+logging.info('y_train [0]: ' + log_content_format.format(str(y_train[0])))
+pred = model.predict(X_train)
+logging.info('pred [0]: ' + log_content_format.format(str(pred[0])))
 logging.info(log_format.format(' End of Evaluate Model '))
 
 #plot loss

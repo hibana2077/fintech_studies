@@ -48,9 +48,4 @@ def liquidation_price(open_price, quantity, face_value, leverage)->tuple:
 # print(liquidation_price(80, 10, 1, 25))#(77.12, 82.88)
 import tensorflow as tf
 
-if tf.config.list_physical_devices('GPU'):
-    print('Running on GPU')
-    print('GPU:', tf.config.list_physical_devices('GPU'))
-else:
-    print('Running on CPU')
-
+print(tf.config.list_physical_devices('GPU'))
