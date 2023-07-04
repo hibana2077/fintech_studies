@@ -2,11 +2,12 @@
 import gym
 from gym import spaces
 import numpy as np
+import pandas as pd
 
 class StockTradingEnv(gym.Env):
     metadata = {'render.modes': ['human']}
   
-    def __init__(self, df, commission=0.0001, init_balance=10000):
+    def __init__(self, df:pd.DataFrame, commission=0.0001, init_balance=10000):
         super(StockTradingEnv, self).__init__()
 
         self.df = df
