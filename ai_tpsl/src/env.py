@@ -6,11 +6,12 @@ import numpy as np
 class StockTradingEnv(gym.Env):
     metadata = {'render.modes': ['human']}
   
-    def __init__(self, df, commission=0.0001):
+    def __init__(self, df, commission=0.0001, init_balance=10000):
         super(StockTradingEnv, self).__init__()
 
         self.df = df
         self.commsion = commission
+        self.init_balance = init_balance
         self.reward_range = (0, np.inf)
         self.action_space = spaces.Discrete(3)  # buy, sell, hold
         self.observation_space = spaces.Box(low=0, high=np.inf, shape=(6,))
@@ -37,7 +38,7 @@ class StockTradingEnv(gym.Env):
         return obs, reward, done, info
 
     def reset(self):
-        self.balance = 10000  # Initial balance
+        self.balance = self.init_balance
         self.position = 0  # Initial position
         self.current_step = 0
         return self._next_observation()
