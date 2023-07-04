@@ -1,5 +1,10 @@
 # Fintech studies
 
+![GitHub stars](https://img.shields.io/github/stars/hibana2077/fintech_studies?style=social)
+![GitHub forks](https://img.shields.io/github/forks/hibana2077/fintech_studies?style=social)
+![GitHub](https://img.shields.io/github/license/hibana2077/fintech_studies)
+![GitHub last commit](https://img.shields.io/github/last-commit/hibana2077/fintech_studies)
+
 This is a repository for my fintech studies.
 
 ## FinTech Repository Idex

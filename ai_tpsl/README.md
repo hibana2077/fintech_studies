@@ -2,15 +2,31 @@
  * @Author: hibana2077 hibana2077@gmail.com
  * @Date: 2023-06-27 22:15:36
  * @LastEditors: hibana2077 hibana2077@gmail.com
- * @LastEditTime: 2023-07-04 11:14:00
+ * @LastEditTime: 2023-07-04 11:21:09
  * @FilePath: \fintech_studies\ai_tpsl\README.md
  * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 -->
 # AI TPSL
 
+![python](https://img.shields.io/badge/python-3.10-blue?style=plastic-square&logo=python)
+![tensorflow](https://img.shields.io/badge/tensorflow-2.12.0-orange?style=plastic-square&logo=tensorflow)
+![keras](https://img.shields.io/badge/keras-2.12.0-red?style=plastic-square&logo=keras)
+![numpy](https://img.shields.io/badge/numpy-1.19.5-blue?style=plastic-square&logo=numpy)
+![pandas](https://img.shields.io/badge/pandas-2.0.2-blue?style=plastic-square&logo=pandas)
+![matplotlib](https://img.shields.io/badge/matplotlib-3.7.1-blue?style=plastic-square&logo=matplotlib)
+![Openai-GYM](https://img.shields.io/badge/Openai--GYM-0.26.2-blue?style=plastic-square&logo=Openai-GYM)
+
 ## 1. Introduction
 
 ## 2. Usage
+
+Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+Go to src directory
 
 ```bash
 cd src
