@@ -7,15 +7,16 @@ import pandas as pd
 class StockTradingEnv(gym.Env):
     metadata = {'render.modes': ['human']}
   
-    def __init__(self, df:pd.DataFrame, commission=0.0001, init_balance=10000):
+    def __init__(self, df:pd.DataFrame, commission=0.0001, init_balance=10000, windows_size=10):
         super(StockTradingEnv, self).__init__()
 
         self.df = df
         self.commsion = commission
         self.init_balance = init_balance
+        self.windows_size = windows_size
         self.reward_range = (0, np.inf)
         self.action_space = spaces.Discrete(3)  # buy, sell, hold
-        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(6,))
+        self.observation_space = spaces.Box(low=0, high=np.inf, shape=(windows_size,df.shape[1]), dtype=np.float32)
 
         # Initialize state
         self.reset()
@@ -24,10 +25,10 @@ class StockTradingEnv(gym.Env):
         self.current_step += 1
 
         if action == 0:  # buy
-            self.balance -= self.df.loc[self.current_step, "Close"]
+            self.balance -= self.df.loc[self.current_step, "close"]
             self.position += 1
         elif action == 1:  # sell
-            self.balance += self.df.loc[self.current_step, "Close"]
+            self.balance += self.df.loc[self.current_step, "close"]
             self.position -= 1
         # else: hold
 
@@ -45,16 +46,16 @@ class StockTradingEnv(gym.Env):
         return self._next_observation()
 
     def render(self, mode='human'):
-        print(f'Step: {self.current_step}, Balance: {self.balance}, Position: {self.position}')
+        print(f'Step: {self.current_step}, Balance: {self.balance}, Position: {self.position}') if mode == 'human' else None
 
     def _next_observation(self):
         # Normalize values (this is just an example, normally you would need more features and they could be in different ranges)
         obs = np.array([
-            self.df.loc[self.current_step, "Open"],
-            self.df.loc[self.current_step, "High"],
-            self.df.loc[self.current_step, "Low"],
-            self.df.loc[self.current_step, "Close"],
-            self.df.loc[self.current_step, "Volume"],
+            self.df.loc[self.current_step, "open"],
+            self.df.loc[self.current_step, "high"],
+            self.df.loc[self.current_step, "low"],
+            self.df.loc[self.current_step, "close"],
+            self.df.loc[self.current_step, "volume"],
             self.position,
         ])
         return obs
