@@ -163,11 +163,10 @@ model.add(LSTM(128, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(LSTM(64, return_sequences=False))
 model.add(Dropout(0.2))
-model.add(Dense(32))
-model.add(Dense(16))
+model.add(Dense(8))
 model.add(Dense(4))
 
-model.compile(optimizer=RMSprop(learning_rate=learning_rate), loss='log_cosh', metrics=['mae','mse','msle'])#huber
+model.compile(optimizer=RMSprop(learning_rate=learning_rate), loss='log_cosh', metrics=['mae','mse','mape'])
 model.summary()
 logging.info(log_format.format(' End of Build Model '))
 
