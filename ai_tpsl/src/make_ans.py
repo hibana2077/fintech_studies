@@ -121,47 +121,31 @@ def calculate_liquidation_price(open_price, quantity, face_value, leverage,mma=0
     return long_liquidation_price, short_liquidation_price
 
 logging.info(log_loding_format.format(' Make label '))
-temp_df = df.copy()
-df_len = len(df)
-for kline in range(df_len):
-    #calculate liquidation price
-    liquidation_price = calculate_liquidation_price(df['open'][kline],quantity,1,leverage)[0]
-    #find liquidation point
-    liquidation_point = 0
-    for i in range(kline, df_len):
-        if df['low'][i] <= liquidation_price:
-            liquidation_point = i
-            break
-    liquidation_point = df_len if liquidation_point == 0 else liquidation_point
-    #rec best TP and SL
-    #rec_list -> (temp_high, temp_low)
-    rec_list = list()
-    temp_high = df.iloc[kline]['high']+1e-10
-    temp_low = df.iloc[kline]['low']+1e-10
-    rec_list.append((temp_high, temp_low))
-    for i in range(kline, liquidation_point):
-        need_update = False
-        if df.iloc[i]['high'] > temp_high:temp_high,need_update = df.iloc[i]['high'],True
-        if df.iloc[i]['low'] < temp_low:temp_low,need_update = df.iloc[i]['low'],True
-        if need_update:rec_list.append((temp_high, temp_low))
-        #print progress
-        #if i % 1000 == 0:print('inner progress: ' + str(i) + '/' + str(df_len))
-    #calculate best TP and SL
-    #formula TP_percent = (TP_price - entry_price) / entry_price
-    #formula SL_percent = (entry_price - SL_price) / entry_price
-    #formula score = TP_percent / SL_percent (the bigger the better)
-    #formula TP1,TP2,TP3 = TP_percent/3,TP_percent/2,TP_percent
-    # print(f"idx: {kline} , rec_list: {rec_list} , liquidation_price: {liquidation_price} , df.iloc[kline]['open']: {df.iloc[kline]['open']}")
-    # print(f"idx: {kline}")
-    best_TP , best_SL = sorted(rec_list, key=lambda x: ((x[0] - df.iloc[kline]['open'])+1e-10) / df.iloc[kline]['open'] / ((df.iloc[kline]['open'] - x[1])+1e-10) / df.iloc[kline]['open'], reverse=True)[0]
-    # print(f"best_TP: {best_TP} , best_SL: {best_SL}")
-    #rec label
-    temp_df.loc[kline, 'TP1'] = (best_TP - df.iloc[kline]['open']) / df.iloc[kline]['open'] / 3
-    temp_df.loc[kline, 'TP2'] = (best_TP - df.iloc[kline]['open']) / df.iloc[kline]['open'] / 2
-    temp_df.loc[kline, 'TP3'] = (best_TP - df.iloc[kline]['open']) / df.iloc[kline]['open']
-    temp_df.loc[kline, 'SL'] = -1 * (((df.iloc[kline]['open'] - best_SL) / df.iloc[kline]['open']) + threshold)
-    #print progress
-    if kline % 1000 == 0:print('progress: ' + str(kline) + '/' + str(df_len))
+def calculate(df:pd.DataFrame, quantity:float, leverage:int, threshold:float=0.01) -> pd.DataFrame:
+    df_len = len(df)
+    temp_df = df.copy()
+    
+    liquidation_prices = calculate_liquidation_price(df['open'], quantity, 1, leverage)[0]
+    liquidation_points = [df_len if np.all(df['low'][i:].gt(liquidation_prices[i])) else df['low'][i:].le(liquidation_prices[i]).idxmax() for i in range(df_len)]
+    
+    best_TPs = []
+    best_SLs = []
+    for kline, lp in enumerate(liquidation_points):
+        temp_high = df.iloc[kline:lp]['high'].max() if lp != df_len else df.iloc[kline]['high']
+        temp_low = df.iloc[kline:lp]['low'].min() if lp != df_len else df.iloc[kline]['low']
+        best_TP, best_SL = max([(temp_high, temp_low)], key=lambda x: ((x[0] - df.iloc[kline]['open'])+1e-10) / df.iloc[kline]['open'] / ((df.iloc[kline]['open'] - x[1])+1e-10) / df.iloc[kline]['open'])
+        best_TPs.append(best_TP)
+        best_SLs.append(best_SL)
+    
+    temp_df['TP1'] = (np.array(best_TPs) - df['open']) / df['open'] / 3
+    temp_df['TP2'] = (np.array(best_TPs) - df['open']) / df['open'] / 2
+    temp_df['TP3'] = (np.array(best_TPs) - df['open']) / df['open']
+    temp_df['SL'] = -1 * (((df['open'] - np.array(best_SLs)) / df['open']) + threshold)
+    
+    return temp_df
+
+temp_df = calculate(df, quantity, leverage, threshold)
+
 
 logging.info(log_success_format.format(' Make label success '))
 
