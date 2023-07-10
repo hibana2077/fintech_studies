@@ -154,20 +154,28 @@ model.add(GRU(64, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(GRU(128, return_sequences=True))
 model.add(Dropout(0.2))
+model.add(GRU(256, return_sequences=True))
+model.add(Dropout(0.2))
+model.add(GRU(128, return_sequences=True))
+model.add(Dropout(0.2))
 model.add(GRU(64, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(BatchNormalization())
 model.add(LSTM(64, return_sequences=True))
 model.add(Dropout(0.2))
-model.add(LSTM(128, return_sequences=True))
+model.add(LSTM(512, return_sequences=True))
 model.add(Dropout(0.2))
 model.add(LSTM(64, return_sequences=False))
+model.add(Dropout(0.2))
+model.add(Dense(4))
+model.add(Dense(16))
+model.add(Dense(32))
 model.add(Dropout(0.2))
 model.add(Dense(32))
 model.add(Dense(16))
 model.add(Dense(4))
 
-model.compile(optimizer=RMSprop(learning_rate=learning_rate), loss='log_cosh', metrics=['mae','mse','msle'])#huber
+model.compile(optimizer=RMSprop(learning_rate=learning_rate), loss='log_cosh', metrics=['mae','mse','msle'])#huber,log_cosh
 model.summary()
 logging.info(log_format.format(' End of Build Model '))
 
@@ -175,6 +183,9 @@ logging.info(log_format.format(' End of Build Model '))
 logging.info(log_format.format(' Train Model '))
 logging.info('Training model')
 early_stop = EarlyStopping(monitor='val_loss', patience=earlystop_patience, verbose=earlystop_verbose)
+#patience=10, verbose=1
+#patience is the number of epochs to wait before early stop, verbose is the verbosity mode
+#1 is the default value, 0 is silent
 history = model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, validation_split=0.1, shuffle=False, callbacks=[early_stop])
 logging.info(log_format.format(' End of Train Model '))
 
