@@ -1,15 +1,6 @@
-'''
-Author: hibana2077 hibana2077@gmail.com
-Date: 2023-10-05 10:39:25
-LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-10-05 11:55:23
-FilePath: \fintech_studies\strategy_switcher\data_getter.py
-Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
-'''
+# Purpose: get data from ccxt and save it to csv file
 import pandas as pd
-import numpy as np
 import argparse
-import time
 import logging
 from ccxt import binanceusdm,Exchange
 from datetime import datetime,timedelta
@@ -28,7 +19,7 @@ logger = logging.getLogger('data_getter')
 
 parser = argparse.ArgumentParser(description='data getter')
 parser.add_argument('--symbol', type=str, default='BTC/USDT')
-parser.add_argument('--timeframe', type=str, default='1d')
+parser.add_argument('--timeframe', type=str, default='4h')
 parser.add_argument('--start_time', type=str, default='2022-01-01 00:00:00')
 parser.add_argument('--end_time', type=str, default='2023-01-01 00:00:00')
 
@@ -66,27 +57,28 @@ def get_data(exchange:Exchange,
                 end_time:datetime)->pd.DataFrame:
     
     #set up time
-    start_time = start_time.timestamp() * 1000
-    end_time = end_time.timestamp() * 1000
+    start_time = binanceusdm.parse8601(start_time.strftime('%Y-%m-%d %H:%M:%S'))
+    end_time = binanceusdm.parse8601(end_time.strftime('%Y-%m-%d %H:%M:%S'))
 
-    #check best limit **has bug**
-    # cnt_list = dict()
-    # for limit in LIMIT_LIST:
-    #     #check max kline count
-    #     max_kline_count = timedelta(milliseconds=end_time - start_time) // timedelta(milliseconds=timeframe_to_milliseconds(timeframe))#return int
-    #     request_times = max_kline_count // limit + 1
-    #     cnt_list[limit] = request_times
-    # limit = max(cnt_list, key=cnt_list.get)
-    # logger.info(f'best limit is {limit}')
+    #check best limit
+    cnt_list = dict()
+    for limit in LIMIT_LIST:
+        #check max kline count
+        max_kline_count = timedelta(milliseconds=end_time - start_time) // timedelta(milliseconds=timeframe_to_milliseconds(timeframe))#return int
+        request_times = max_kline_count // limit + 1
+        cnt_list[limit] = request_times
+    limit = max(cnt_list, key=cnt_list.get)
+    logger.info(f'best limit is {limit}')
 
     #get data
     out_data = []
     logger.info(f'time info: start_time: {start_time}, end_time: {end_time}, timeframe: {timeframe}')
     while start_time < end_time:
-        data = exchange.fetch_ohlcv(symbol=symbol, timeframe=timeframe, since=start_time, limit=1000)
+        print(f"Date time Start: {datetime.fromtimestamp(start_time/1000)} , End: {datetime.fromtimestamp(end_time/1000)}")
+        data = exchange.fetch_ohlcv(symbol=symbol, timeframe=timeframe, since=start_time, limit=limit)
         out_data += data
         start_time = data[-1][0] + timeframe_to_milliseconds(timeframe)
-        time.sleep(0.05)
+        print(f"Date time Start: {datetime.fromtimestamp(start_time/1000)} , End: {datetime.fromtimestamp(end_time/1000)}")
     df = pd.DataFrame(out_data, columns=['time', 'open', 'high', 'low', 'close', 'volume'])
     df['time'] = pd.to_datetime(df['time'], unit='ms')
     df.set_index('time', inplace=True)
