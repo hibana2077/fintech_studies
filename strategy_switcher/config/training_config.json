@@ -1,0 +1,12 @@
+{
+    "train_name": "model_1",
+    "data_path": "data/BTCUSDT_4h_processed.csv",
+    "model_path": "models/model_1",
+    "target": "signal1",
+    "drop_columns": "signal2",
+    "note": "model_1",
+    "batch_size": 32,
+    "learning_rate": 0.0001,
+    "num_epochs": 100,
+    "windows_size": 5
+}
