@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2023-12-21 17:25:17
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-12-21 17:45:58
+LastEditTime: 2023-12-21 18:43:53
 FilePath: \fintech_studies\mamba_price_predict\data_process.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -17,6 +17,7 @@ logger = logging.getLogger('data_process')
 
 # Set up argument parser
 # input : load_data_location, save_data_location
+# Usage : python data_process.py --load_data_location data/raw_data.csv --save_data_location data/processed_data.csv
 parser = argparse.ArgumentParser(description='data process')
 parser.add_argument('--load_data_location', type=str, default='data/raw_data.csv')
 parser.add_argument('--save_data_location', type=str, default='data/processed_data.csv')
@@ -62,3 +63,7 @@ raw_data.dropna(inplace=True)
 
 # Save data
 raw_data.to_csv(args.save_data_location)
+
+logger.info(f"Data info:")
+logger.info(f"Data shape: {raw_data.shape}")
+logger.info(f"Data saved to {args.save_data_location}")
