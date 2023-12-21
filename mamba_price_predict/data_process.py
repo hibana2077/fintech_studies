@@ -69,7 +69,7 @@ raw_data['entropy'] = ta.entropy(raw_data['close'], length=10)
 raw_data.dropna(inplace=True)
 
 # Drop columns
-raw_data.drop(['open', 'high', 'low', 'close', 'volume'], axis=1, inplace=True)
+# raw_data.drop(['open', 'high', 'low', 'close', 'volume'], axis=1, inplace=True)
 
 # Save data
 raw_data.to_csv(args.save_data_location)
