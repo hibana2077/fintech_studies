@@ -42,7 +42,7 @@ def split_data(data:pd.DataFrame, window_size:int):
     y = []
     for i in range(len(data) - window_size):
         X.append(data.iloc[i:i+window_size].values)
-        y.append(data.iloc[i+window_size, 3])
+        y.append(data.iloc[i+window_size, 0])
     return np.array(X), np.array(y)
 
 X, y = split_data(data, window_size)
@@ -98,7 +98,7 @@ for epoch in range(EPOCHS):
         # Forward pass
         outputs = model(data) # [batch_size, window_size, dim]
         # targets -> [batch_size, 0]
-        outputs = outputs[:, -1, 3]
+        outputs = outputs[:, -1, 0]
         loss = criterion(outputs, targets)
 
         # Backward pass and optimization
@@ -120,7 +120,7 @@ with torch.no_grad():
         # Forward pass
         outputs = model(data) # [batch_size, window_size, dim]
         # targets -> [batch_size, 0]
-        outputs = outputs[:, -1, 3]
+        outputs = outputs[:, -1, 0]
         loss = criterion(outputs, targets)
         print(f'Loss: {loss.item():.4f}')
         loss_list.append(loss.item())
