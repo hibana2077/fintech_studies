@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import pandas as pd
+import numpy as np
 import argparse
 from mamba_ssm import Mamba
 from sklearn.model_selection import train_test_split
@@ -41,8 +42,8 @@ def split_data(data:pd.DataFrame, window_size:int):
     y = []
     for i in range(len(data) - window_size):
         X.append(data.iloc[i:i+window_size].values)
-        y.append(data.iloc[i+window_size].values)
-    return pd.DataFrame(X), pd.DataFrame(y)
+        y.append(data.iloc[i+window_size, 0])
+    return np.array(X), np.array(y)
 
 X, y = split_data(data, window_size)
 
@@ -72,10 +73,17 @@ model = Mamba(
 ).to(DEVICE)
 
 # Define your loss function
-criterion = nn.CrossEntropyLoss().to(DEVICE)
+criterion = nn.L1Loss().to(DEVICE)
 
 # Define your optimizer
 optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+# TEST output shape
+for batch_idx, (x, y) in enumerate(train_loader):
+    x, y = x.to(DEVICE), y.to(DEVICE)
+    output = model(x)
+    print(output.shape)
+    break
 
 # Training loop
 for epoch in range(EPOCHS):
@@ -83,8 +91,14 @@ for epoch in range(EPOCHS):
     model.train()
 
     for batch_idx, (data, targets) in enumerate(train_loader):
+        # Get data to cuda if possible
+        data = data.to(DEVICE)
+        targets = targets.to(DEVICE)
+
         # Forward pass
-        outputs = model(data)
+        outputs = model(data) # [batch_size, window_size, dim]
+        # targets -> [batch_size, 0]
+        outputs = outputs[:, -1, 0]
         loss = criterion(outputs, targets)
 
         # Backward pass and optimization
@@ -92,9 +106,26 @@ for epoch in range(EPOCHS):
         loss.backward()
         optimizer.step()
 
-        # Print training progress
-        if (batch_idx + 1) % print_interval == 0:
-            print(f'Epoch [{epoch+1}/{EPOCHS}], Step [{batch_idx+1}/{len(train_loader)}], Loss: {loss.item():.4f}')
+    print(f'Epoch [{epoch+1}/{EPOCHS}], Loss: {loss.item():.4f}')
+
+# Prediction
+model.eval()
+with torch.no_grad():
+    loss_list = []
+    for batch_idx, (data, targets) in enumerate(test_loader):
+        # Get data to cuda if possible
+        data = data.to(DEVICE)
+        targets = targets.to(DEVICE)
+
+        # Forward pass
+        outputs = model(data) # [batch_size, window_size, dim]
+        # targets -> [batch_size, 0]
+        outputs = outputs[:, -1, 0]
+        loss = criterion(outputs, targets)
+        print(f'Loss: {loss.item():.4f}')
+        loss_list.append(loss.item())
+    print(f'Average loss: {np.mean(loss_list):.4f}')
+
 
 # Save the trained model
 torch.save(model.state_dict(), 'model.pth')

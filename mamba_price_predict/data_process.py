@@ -2,7 +2,7 @@
 Author: hibana2077 hibana2077@gmail.com
 Date: 2023-12-21 17:25:17
 LastEditors: hibana2077 hibana2077@gmail.com
-LastEditTime: 2023-12-21 18:43:53
+LastEditTime: 2023-12-21 20:53:48
 FilePath: \fintech_studies\mamba_price_predict\data_process.py
 Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
 '''
@@ -33,6 +33,13 @@ raw_data = raw_data.astype(float)
 
 # Add indicators
 
+# diff pct
+raw_data['close_diff_pct'] = raw_data['close'].pct_change()
+raw_data['volume_diff_pct'] = raw_data['volume'].pct_change()
+raw_data['open_diff_pct'] = raw_data['open'].pct_change()
+raw_data['high_diff_pct'] = raw_data['high'].pct_change()
+raw_data['low_diff_pct'] = raw_data['low'].pct_change()
+
 # Moving average
 raw_data['ema_5'] = ta.ema(raw_data['close'], length=5)
 raw_data['ema_10'] = ta.ema(raw_data['close'], length=10)
@@ -60,6 +67,9 @@ raw_data['entropy'] = ta.entropy(raw_data['close'], length=10)
 
 # Drop NaN
 raw_data.dropna(inplace=True)
+
+# Drop columns
+raw_data.drop(['open', 'high', 'low', 'close', 'volume'], axis=1, inplace=True)
 
 # Save data
 raw_data.to_csv(args.save_data_location)
